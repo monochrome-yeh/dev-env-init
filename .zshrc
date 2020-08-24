@@ -87,7 +87,7 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-source ~/.bashrc
+source ~/.bash_profile
 autoload -U zmv
 
 export PATH="$HOME/.yarn/bin:$PATH"
@@ -98,6 +98,7 @@ export PATH="./node_modules/.bin:$PATH"
 # place this after nvm initialization!
 autoload -U add-zsh-hook
 load-nvmrc() {
+  SYSTEM_NODE_PATH="/usr/local/bin/node"
   local node_version="$(nvm version)"
   local nvmrc_path="$(nvm_find_nvmrc)"
 
@@ -108,11 +109,16 @@ load-nvmrc() {
       nvm install
     elif [ "$nvmrc_node_version" != "$node_version" ]; then
       nvm use
+      ln -fs "$(nvm which current)" "$SYSTEM_NODE_PATH"
+
     fi
   elif [ "$node_version" != "$(nvm version default)" ]; then
     echo "Reverting to nvm default version"
     nvm use default
+    ln -fs "$(nvm which default)" "$SYSTEM_NODE_PATH"
+
   fi
 }
 add-zsh-hook chpwd load-nvmrc
 load-nvmrc
+
